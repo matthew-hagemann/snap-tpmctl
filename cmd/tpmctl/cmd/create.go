@@ -1,33 +1,34 @@
 package cmd
 
-/*
 import (
 	"context"
+	"fmt"
 
 	"github.com/urfave/cli/v3"
 )
 
-func CreateKeyCommand() *cli.Command {
+func newCreateKeyCmd() *cli.Command {
 	return &cli.Command{
 		Name:   "create-key",
 		Usage:  "Create a new local recovery key",
-		Action: createKeyAction,
+		Action: createKey,
 	}
 }
 
-func createKeyAction(ctx context.Context, cmd *cli.Command) error {
+func createKey(ctx context.Context, cmd *cli.Command) error {
+	fmt.Println("Created local key")
 	return nil
 }
 
-func CreateEnterpriseKeyCommand() *cli.Command {
+func newCreateEnterpriseKeyCmd() *cli.Command {
 	return &cli.Command{
 		Name:   "create-enterprise-key",
 		Usage:  "Create a new enterprise recovery key for Landscape",
-		Action: createEnterpriseKeyAction,
+		Action: createEnterpriseKey,
 	}
 }
 
-func createEnterpriseKeyAction(ctx context.Context, cmd *cli.Command) error {
+func createEnterpriseKey(ctx context.Context, cmd *cli.Command) error {
+	fmt.Println("Created enterprise key")
 	return nil
 }
-*/
