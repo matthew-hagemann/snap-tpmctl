@@ -2,6 +2,10 @@ package main_test
 
 import "testing"
 
-// TODO: create a mock struct for testing
+type AppMock struct{}
+
+func (a AppMock) Run() error {
+	return nil
+}
 
 func TestRun(t *testing.T) {}

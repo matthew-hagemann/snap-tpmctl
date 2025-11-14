@@ -8,13 +8,10 @@ import (
 
 func newMountVolumeCmd() *cli.Command {
 	return &cli.Command{
-		Name:  "mount-volume",
-		Usage: "Unlock and mount a LUKS encrypted volume",
+		Name:      "mount-volume",
+		Usage:     "Unlock and mount a LUKS encrypted volume",
+		ArgsUsage: "<key-id>",
 		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  "key-id",
-				Usage: "Recovery key ID to use for unlocking",
-			},
 			&cli.StringFlag{
 				Name:  "mount-point",
 				Usage: "Mount point for the volume",
@@ -31,13 +28,10 @@ func mountVolume(ctx context.Context, cmd *cli.Command) error {
 
 func newGetLuksPassphraseCmd() *cli.Command {
 	return &cli.Command{
-		Name:  "get-luks-passphrase",
-		Usage: "Get LUKS passphrase from recovery key",
+		Name:      "get-luks-passphrase",
+		Usage:     "Get LUKS passphrase from recovery key",
+		ArgsUsage: "<key-id>",
 		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  "key-id",
-				Usage: "Recovery key ID to use for unlocking",
-			},
 			&cli.StringFlag{
 				Name:  "file",
 				Usage: "Write passphrase to file",

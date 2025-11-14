@@ -9,15 +9,10 @@ import (
 
 func newRegenerateKeyCmd() *cli.Command {
 	return &cli.Command{
-		Name:  "regenerate-key",
-		Usage: "Regenerate an existing local recovery key",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  "key-id",
-				Usage: "Recovery key ID to use for unlocking",
-			},
-		},
-		Action: regenerateKey,
+		Name:      "regenerate-key",
+		Usage:     "Regenerate an existing local recovery key",
+		ArgsUsage: "<key-id>",
+		Action:    regenerateKey,
 	}
 }
 
@@ -29,13 +24,7 @@ func regenerateKey(ctx context.Context, cmd *cli.Command) error {
 func newRegenerateEnterpriseKeyCmd() *cli.Command {
 	return &cli.Command{
 		Name:  "regenerate-enterprise-key",
-		Usage: "Regenerate an existing enterprise recovery key",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  "key-id",
-				Usage: "Recovery key ID to use for unlocking",
-			},
-		},
+		Usage: "Regenerate an existing enterprise recovery key", ArgsUsage: "<key-id>",
 		Action: regenerateEnterpriseKey,
 	}
 }
