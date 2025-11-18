@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"log/slog"
+	"snap-tpmctl/internal/log"
 
 	"github.com/urfave/cli/v3"
 )
@@ -26,12 +26,22 @@ func newStatusCmd() *cli.Command {
 
 func status(ctx context.Context, cmd *cli.Command) error {
 	// TODO: add validator for key-id
+
+	// TODO: is it safe calling arguments like this?
 	if cmd.IntArg("key-id") < 0 {
 		return cli.Exit("Missing key-id argument", 1)
 	}
 
 	fmt.Println("This is my status for key", cmd.IntArg("key-id"))
-	slog.Debug("this is my debug log")
+
+	// slog.Debug("detailed information for troubleshooting")
+	// slog.Info("general operational information")
+	// slog.Warn("something unexpected but not critical")
+
+	log.Debug(ctx, "detailed information for troubleshooting")
+	log.Info(ctx, "general operational information")
+	log.Notice(ctx, "something unexpected and critical")
+	log.Warning(ctx, "something unexpected but not critical")
 
 	return nil
 }

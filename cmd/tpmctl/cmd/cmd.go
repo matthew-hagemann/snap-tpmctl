@@ -5,13 +5,10 @@ import (
 	"log/slog"
 	"os"
 
+	"snap-tpmctl/internal/log"
+
 	"github.com/urfave/cli/v3"
 )
-
-// TODO: make logging with a more human output. (look at authd for slog)
-// TODO: add tests for main.go
-// 		Look for table testing
-// 		Look at parallel testing
 
 // App is the main application structure.
 type App struct {
@@ -79,17 +76,17 @@ func newRootCmd() cli.Command {
 }
 
 func setupLogging(level int) {
-	l := slog.LevelWarn
 	switch level {
 	case 0:
+		log.SetLevel(log.WarnLevel)
+	case 1:
+		log.SetLevel(log.NoticeLevel)
 	case 2:
-		l = slog.LevelInfo
+		log.SetLevel(log.InfoLevel)
 	default:
-		l = slog.LevelDebug
+		log.SetLevel(log.DebugLevel)
+		slog.SetLogLoggerLevel(slog.LevelDebug)
 	}
 
-	h := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
-		Level: l,
-	})
-	slog.SetDefault(slog.New(h))
+	log.SetOutput(os.Stderr)
 }
