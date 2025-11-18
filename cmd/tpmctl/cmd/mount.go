@@ -8,13 +8,13 @@ import (
 
 func newMountVolumeCmd() *cli.Command {
 	return &cli.Command{
-		Name:      "mount-volume",
-		Usage:     "Unlock and mount a LUKS encrypted volume",
-		ArgsUsage: "<key-id>",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  "mount-point",
-				Usage: "Mount point for the volume",
+		Name:    "mount-volume",
+		Usage:   "Unlock and mount a LUKS encrypted volume",
+		Suggest: true,
+		Arguments: []cli.Argument{
+			&cli.StringArg{
+				Name:      "mount-point",
+				UsageText: "<mount-point>",
 			},
 		},
 		Action: mountVolume,
@@ -22,15 +22,28 @@ func newMountVolumeCmd() *cli.Command {
 }
 
 func mountVolume(ctx context.Context, cmd *cli.Command) error {
-	println("Mount volume in", cmd.String("mount-point"))
+	// TODO: add validator for mount-point [string]
+
+	if cmd.StringArg("mount-point") == "" {
+		return cli.Exit("Missing mount-point argument", 1)
+	}
+
+	println("Mount volume in", cmd.StringArg("mount-point"))
 	return nil
 }
 
 func newGetLuksPassphraseCmd() *cli.Command {
 	return &cli.Command{
-		Name:      "get-luks-passphrase",
-		Usage:     "Get LUKS passphrase from recovery key",
-		ArgsUsage: "<key-id>",
+		Name:    "get-luks-passphrase",
+		Usage:   "Get LUKS passphrase from recovery key",
+		Suggest: true,
+		Arguments: []cli.Argument{
+			&cli.IntArg{
+				Name:      "key-id",
+				UsageText: "<key-id>",
+				Value:     -1,
+			},
+		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "file",
@@ -42,13 +55,20 @@ func newGetLuksPassphraseCmd() *cli.Command {
 }
 
 func getLuksPassphrase(ctx context.Context, cmd *cli.Command) error {
-	println("Get LUKS passphrase for key", cmd.String("key-id"))
+	// TODO: add validator for key-id [int]
 
-	if file := cmd.String("file"); file == "" {
-		println("print to stdout")
-	} else {
-		println("print to file", file)
+	if cmd.IntArg("key-id") < 0 {
+		return cli.Exit("Missing key-id argument", 1)
 	}
+
+	// TODO: add validator for file [string]
+	if file := cmd.String("file"); file != "" {
+		println("print to file", file)
+	} else {
+		println("print to stdout")
+	}
+
+	println("Get LUKS passphrase for key", cmd.IntArg("key-id"))
 
 	return nil
 }

@@ -67,7 +67,7 @@ func newRootCmd() cli.Command {
 			// 	Value: "/dev/tpm0",
 			// },
 		},
-		Before: func(ctx context.Context, c *cli.Command) (context.Context, error) {
+		Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
 			println(verbosity)
 			setupLogging(verbosity)
 			return ctx, nil
