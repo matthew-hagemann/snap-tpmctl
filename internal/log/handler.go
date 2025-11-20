@@ -7,8 +7,7 @@ import (
 	"log/slog"
 )
 
-// TODO: remove timestamp
-// SimpleHandler writes logs in the format: <timestamp> <level> <message>.
+// SimpleHandler writes logs in the format: <level> <message>.
 type SimpleHandler struct {
 	slog.TextHandler
 	w io.Writer
@@ -27,8 +26,7 @@ func NewSimpleHandler(w io.Writer, level slog.Level) slog.Handler {
 
 // Handle implements the slog.Handler interface.
 func (h *SimpleHandler) Handle(ctx context.Context, r slog.Record) error {
-	t := r.Time.Format("15:04:05")
-	_, err := fmt.Fprintf(h.w, "%s %s %s\n", t, r.Level.String(), r.Message)
+	_, err := fmt.Fprintf(h.w, "%s %s\n", r.Level.String(), r.Message)
 	return err
 }
 

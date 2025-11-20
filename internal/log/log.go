@@ -82,7 +82,6 @@ func SetOutput(out io.Writer) {
 	slog.SetDefault(slog.New(NewSimpleHandler(out, GetLevel())))
 }
 
-// TODO: needed?
 // SetLevelHandler allows to define the default handler function for a given level.
 func SetLevelHandler(level Level, handler Handler) {
 	if handler == nil {
