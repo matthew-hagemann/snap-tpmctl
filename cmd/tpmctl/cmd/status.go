@@ -4,44 +4,37 @@ import (
 	"context"
 	"fmt"
 	"snap-tpmctl/internal/log"
-	"snap-tpmctl/internal/validator"
 
 	"github.com/urfave/cli/v3"
 )
 
-type statusArgs struct {
-	key   int
-	other int
-}
-
 func newStatusCmd() *cli.Command {
-	var args statusArgs
+	var recoveryKey string
 
 	return &cli.Command{
 		Name:    "status",
 		Usage:   "Show TPM status",
 		Suggest: true,
 		Arguments: []cli.Argument{
-			&cli.IntArg{
+			&cli.StringArg{
+				// check
 				Name:        "key-id",
 				UsageText:   "<key-id>",
-				Value:       -1,
-				Destination: &args.key,
+				Destination: &recoveryKey,
 			},
 		},
 		Action: func(ctx context.Context, cmd *cli.Command) error {
-			return status(ctx, cmd, args)
+			if err := isValidRecoveryKey(recoveryKey); err != nil {
+				return err
+			}
+
+			return status(ctx, recoveryKey)
 		},
 	}
 }
 
-func status(ctx context.Context, _cmd *cli.Command, args statusArgs) error {
-	key, err := validator.ValidateKey(args.key)
-	if err != nil {
-		return cli.Exit(fmt.Errorf("invalid key-id value, %s", err.Error()), 1)
-	}
-
-	fmt.Println("This is my status for key", key)
+func status(ctx context.Context, recoveryKey string) error {
+	fmt.Println("This is my status for key", recoveryKey)
 
 	// slog.Debug("detailed information for troubleshooting")
 	// slog.Info("general operational information")
@@ -52,5 +45,10 @@ func status(ctx context.Context, _cmd *cli.Command, args statusArgs) error {
 	log.Notice(ctx, "something unexpected and critical")
 	log.Warning(ctx, "something unexpected but not critical")
 
+	return nil
+}
+
+func isValidRecoveryKey(k string) error {
+	// TODO: regexp validation
 	return nil
 }

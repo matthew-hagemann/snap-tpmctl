@@ -82,6 +82,7 @@ func SetOutput(out io.Writer) {
 	slog.SetDefault(slog.New(NewSimpleHandler(out, GetLevel())))
 }
 
+// TODO: needed?
 // SetLevelHandler allows to define the default handler function for a given level.
 func SetLevelHandler(level Level, handler Handler) {
 	if handler == nil {
@@ -105,79 +106,79 @@ func SetHandler(handler Handler) {
 	}
 }
 
-func log(context context.Context, level Level, args ...any) {
-	if !isLevelEnabled(context, level) {
+func log(ctx context.Context, level Level, args ...any) {
+	if !isLevelEnabled(ctx, level) {
 		return
 	}
 
-	logf(context, level, fmt.Sprint(args...))
+	logf(ctx, level, fmt.Sprint(args...))
 }
 
-func logf(context context.Context, level Level, format string, args ...any) {
-	if !isLevelEnabled(context, level) {
+func logf(ctx context.Context, level Level, format string, args ...any) {
+	if !isLevelEnabled(ctx, level) {
 		return
 	}
 
 	handler := handlers[level]
-	handler(context, level, format, args...)
+	handler(ctx, level, format, args...)
 }
 
 // Debug outputs messages with the level [DebugLevel] (when that is enabled) using the
 // configured logging handler.
-func Debug(context context.Context, args ...any) {
-	log(context, DebugLevel, args...)
+func Debug(ctx context.Context, args ...any) {
+	log(ctx, DebugLevel, args...)
 }
 
 // Debugf outputs messages with the level [DebugLevel] (when that is enabled) using the
 // configured logging handler.
-func Debugf(context context.Context, format string, args ...any) {
-	logf(context, DebugLevel, format, args...)
+func Debugf(ctx context.Context, format string, args ...any) {
+	logf(ctx, DebugLevel, format, args...)
 }
 
 // Info outputs messages with the level [InfoLevel] (when that is enabled) using the
 // configured logging handler.
-func Info(context context.Context, args ...any) {
-	log(context, InfoLevel, args...)
+func Info(ctx context.Context, args ...any) {
+	log(ctx, InfoLevel, args...)
 }
 
 // Infof outputs messages with the level [InfoLevel] (when that is enabled) using the
 // configured logging handler.
-func Infof(context context.Context, format string, args ...any) {
-	logf(context, InfoLevel, format, args...)
+func Infof(ctx context.Context, format string, args ...any) {
+	logf(ctx, InfoLevel, format, args...)
 }
 
 // Notice outputs messages with the level [NoticeLevel] (when that is enabled) using the
 // configured logging handler.
-func Notice(context context.Context, args ...any) {
-	log(context, NoticeLevel, args...)
+func Notice(ctx context.Context, args ...any) {
+	log(ctx, NoticeLevel, args...)
 }
 
 // Noticef outputs messages with the level [NoticeLevel] (when that is enabled) using the
 // configured logging handler.
-func Noticef(context context.Context, format string, args ...any) {
-	logf(context, NoticeLevel, format, args...)
+func Noticef(ctx context.Context, format string, args ...any) {
+	logf(ctx, NoticeLevel, format, args...)
 }
 
 // Warning outputs messages with the level [WarningLevel] (when that is enabled) using the
 // configured logging handler.
-func Warning(context context.Context, args ...any) {
-	log(context, WarnLevel, args...)
+func Warning(ctx context.Context, args ...any) {
+	log(ctx, WarnLevel, args...)
 }
 
 // Warningf outputs messages with the level [WarningLevel] (when that is enabled) using the
 // configured logging handler.
-func Warningf(context context.Context, format string, args ...any) {
-	logf(context, WarnLevel, format, args...)
+func Warningf(ctx context.Context, format string, args ...any) {
+	logf(ctx, WarnLevel, format, args...)
 }
 
 // Error outputs messages with the level [ErrorLevel] (when that is enabled) using the
 // configured logging handler.
-func Error(context context.Context, args ...any) {
-	log(context, ErrorLevel, args...)
+func Error(ctx context.Context, args ...any) {
+	log(ctx, ErrorLevel, args...)
 }
 
 // Errorf outputs messages with the level [ErrorLevel] (when that is enabled) using the
 // configured logging handler.
-func Errorf(context context.Context, format string, args ...any) {
-	logf(context, ErrorLevel, format, args...)
+func Errorf(ctx context.Context, format string, args ...any) {
+	logf(ctx, ErrorLevel, format, args...)
 }

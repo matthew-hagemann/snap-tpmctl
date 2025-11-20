@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"log/slog"
 	"os"
 
 	"snap-tpmctl/internal/log"
@@ -10,21 +9,31 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
+/*
+  TODO: No date or time in log output for stderr
+  2025/11/20 11:45:59 ERROR flag needs an argument: --file
+  11:46:54 ERROR invalid value "asdf" for argument key-id: strconv.ParseInt: parsing "asdf": invalid syntax
+
+
+*/
+
 // App is the main application structure.
 type App struct {
+	args []string
 	root cli.Command
 }
 
 // New returns a new App.
-func New() App {
+func New(args []string) App {
 	return App{
+		args: args,
 		root: newRootCmd(),
 	}
 }
 
 // Run is the main entry point of the app.
 func (a App) Run() error {
-	return a.root.Run(context.Background(), os.Args)
+	return a.root.Run(context.Background(), a.args)
 }
 
 func newRootCmd() cli.Command {
@@ -68,7 +77,6 @@ func newRootCmd() cli.Command {
 			// },
 		},
 		Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
-			println(verbosity)
 			setupLogging(verbosity)
 			return ctx, nil
 		},
@@ -80,12 +88,9 @@ func setupLogging(level int) {
 	case 0:
 		log.SetLevel(log.WarnLevel)
 	case 1:
-		log.SetLevel(log.NoticeLevel)
-	case 2:
 		log.SetLevel(log.InfoLevel)
 	default:
 		log.SetLevel(log.DebugLevel)
-		slog.SetLogLoggerLevel(slog.LevelDebug)
 	}
 
 	log.SetOutput(os.Stderr)

@@ -11,7 +11,7 @@ type app interface {
 }
 
 func main() {
-	a := cmd.New()
+	a := cmd.New(os.Args)
 	os.Exit(run(a))
 }
 

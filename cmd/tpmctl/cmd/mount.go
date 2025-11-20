@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/urfave/cli/v3"
 )
@@ -28,7 +29,7 @@ func mountVolume(ctx context.Context, cmd *cli.Command) error {
 		return cli.Exit("Missing mount-point argument", 1)
 	}
 
-	println("Mount volume in", cmd.StringArg("mount-point"))
+	fmt.Println("Mount volume in", cmd.StringArg("mount-point"))
 	return nil
 }
 
@@ -58,15 +59,17 @@ func getLuksPassphrase(ctx context.Context, cmd *cli.Command) error {
 	// TODO: add validator for key-id [int]
 
 	if cmd.IntArg("key-id") < 0 {
+		// TODO… return an error instead
 		return cli.Exit("Missing key-id argument", 1)
 	}
 
-	// TODO: add validator for file [string]
-	if file := cmd.String("file"); file != "" {
-		println("print to file", file)
-	} else {
-		println("print to stdout")
+	// TODO: add validator for f [string]
+
+	msg := "print to stdout"
+	if f := cmd.String("file"); f != "" {
+		msg = fmt.Sprintf("print to file: %s", f)
 	}
+	fmt.Println(msg)
 
 	println("Get LUKS passphrase for key", cmd.IntArg("key-id"))
 

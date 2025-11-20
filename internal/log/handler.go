@@ -7,13 +7,12 @@ import (
 	"log/slog"
 )
 
+// TODO: remove timestamp
 // SimpleHandler writes logs in the format: <timestamp> <level> <message>.
 type SimpleHandler struct {
 	slog.TextHandler
 	w io.Writer
 }
-
-// TODO: add an handler with a context?
 
 // NewSimpleHandler creates a new SimpleHandler that writes to the provided io.Writer.
 func NewSimpleHandler(w io.Writer, level slog.Level) slog.Handler {

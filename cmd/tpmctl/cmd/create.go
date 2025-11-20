@@ -15,6 +15,7 @@ func newCreateKeyCmd() *cli.Command {
 	}
 }
 
+// TODO: do not take cmd *cli.Command
 func createKey(ctx context.Context, cmd *cli.Command) error {
 	fmt.Println("Created local key")
 	return nil

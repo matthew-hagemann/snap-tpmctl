@@ -1,36 +1,49 @@
 package main
 
 import (
+	"bytes"
 	"errors"
+	"log/slog"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 type mockApp struct{ err error }
 
-func (m mockApp) Run() error { return m.err }
+func (m mockApp) Run() error {
 
-func TestRun_Table(t *testing.T) {
-	t.Parallel()
+	return m.err
+}
+
+func TestRun(t *testing.T) {
+	//t.Parallel()
 
 	tests := map[string]struct {
-		app            mockApp
-		wantExit       int
-		wantLogContain string
+		app mockApp
+
+		want      int
+		wantInLog string
 	}{
-		"exit_with_success":      {app: mockApp{err: nil}, wantExit: 0},
-		"exit_with_error_code_1": {app: mockApp{err: errors.New("foo")}, wantExit: 1, wantLogContain: "foo"},
+		"Returns 0 on success":        {app: mockApp{err: nil}, want: 0},
+		"Returns 1 when got an error": {app: mockApp{err: errors.New("desired error")}, want: 1, wantInLog: "desired error"},
 	}
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			t.Parallel()
+			// TODO: Didier: Run this in parallel (log in context)
+			// TODO: Didier: Check for testify replacement
+			//t.Parallel()
 
-			if tc.wantExit != 0 {
-			}
+			var logs bytes.Buffer
+			h := slog.NewTextHandler(&logs, nil)
+			slog.SetDefault(slog.New(h))
 
-			if got := run(tc.app); got != tc.wantExit {
-				t.Fatalf("run() = %d, want %d", got, tc.wantExit)
-			}
+			got := run(tc.app)
+			require.Equal(t, tc.want, got, "Return value does not match")
+
+			require.Contains(t, logs.String(), tc.wantInLog, "Logged expected output")
+
 		})
 	}
 }
