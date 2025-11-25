@@ -13,8 +13,6 @@ import (
   TODO: No date or time in log output for stderr
   2025/11/20 11:45:59 ERROR flag needs an argument: --file
   11:46:54 ERROR invalid value "asdf" for argument key-id: strconv.ParseInt: parsing "asdf": invalid syntax
-
-
 */
 
 // App is the main application structure.
@@ -70,11 +68,6 @@ func newRootCmd() cli.Command {
 					Count: &verbosity,
 				},
 			},
-			// &cli.StringFlag{
-			// 	Name:  "tpm-path",
-			// 	Usage: "TPM device path",
-			// 	Value: "/dev/tpm0",
-			// },
 		},
 		Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
 			setupLogging(verbosity)

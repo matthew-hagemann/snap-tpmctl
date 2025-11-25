@@ -3,52 +3,53 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"snap-tpmctl/internal/log"
+	"snap-tpmctl/internal/snapd"
 
 	"github.com/urfave/cli/v3"
 )
 
 func newStatusCmd() *cli.Command {
-	var recoveryKey string
-
 	return &cli.Command{
 		Name:    "status",
 		Usage:   "Show TPM status",
 		Suggest: true,
-		Arguments: []cli.Argument{
-			&cli.StringArg{
-				// check
-				Name:        "key-id",
-				UsageText:   "<key-id>",
-				Destination: &recoveryKey,
-			},
-		},
 		Action: func(ctx context.Context, cmd *cli.Command) error {
-			if err := isValidRecoveryKey(recoveryKey); err != nil {
-				return err
-			}
-
-			return status(ctx, recoveryKey)
+			return status(ctx)
 		},
 	}
 }
 
-func status(ctx context.Context, recoveryKey string) error {
-	fmt.Println("This is my status for key", recoveryKey)
+func status(ctx context.Context) error {
+	fmt.Println("This is my status for the system")
 
-	// slog.Debug("detailed information for troubleshooting")
-	// slog.Info("general operational information")
-	// slog.Warn("something unexpected but not critical")
+	c := snapd.NewClient()
+	defer c.Close()
 
-	log.Debug(ctx, "detailed information for troubleshooting")
-	log.Info(ctx, "general operational information")
-	log.Notice(ctx, "something unexpected and critical")
-	log.Warning(ctx, "something unexpected but not critical")
+	res, err := c.EnumerateKeySlots(ctx)
+	if err != nil {
+		return err
+	}
 
-	return nil
-}
+	for _, volume := range res.ByContainerRole {
+		// Look for text template in Go
+		// https://pkg.go.dev/text/template
 
-func isValidRecoveryKey(k string) error {
-	// TODO: regexp validation
+		fmt.Printf("Volume: %s\n", volume.Name)
+		fmt.Printf("  Encrypted: %v\n", volume.Encrypted)
+		fmt.Printf("  VolumeName: %v\n", volume.VolumeName)
+
+		if len(volume.KeySlots) > 0 {
+			fmt.Println("  KeySlots:")
+		}
+
+		for _, slot := range volume.KeySlots {
+			fmt.Printf("    AuthMode: %v\n", slot.AuthMode)
+			fmt.Printf("    PlatformName: %v\n", slot.PlatformName)
+			fmt.Printf("    Roles: %v\n", slot.Roles)
+			fmt.Printf("    Type: %v\n", slot.Type)
+		}
+		fmt.Println()
+	}
+
 	return nil
 }
