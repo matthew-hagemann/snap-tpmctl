@@ -6,7 +6,22 @@ import (
 	"net/http"
 )
 
-// VolumeInfo describes a system volume
+// KeySlotInfo describes a keyslot in a volume.
+type KeySlotInfo struct {
+	Type         string   `json:"type"`
+	AuthMode     string   `json:"auth-mode,omitempty"`
+	PlatformName string   `json:"platform-name,omitempty"`
+	Roles        []string `json:"roles,omitempty"`
+}
+
+// VolumeKeySlot describes a keyslot configuration.
+type VolumeKeySlot struct {
+	Number   int    `json:"number"`
+	Name     string `json:"name,omitempty"`
+	Priority int    `json:"priority,omitempty"`
+}
+
+// VolumeInfo describes a system volume.
 type VolumeInfo struct {
 	Name       string                 `json:"name"`
 	VolumeName string                 `json:"volume-name"`
@@ -14,13 +29,13 @@ type VolumeInfo struct {
 	KeySlots   map[string]KeySlotInfo `json:"keyslots,omitempty"`
 }
 
-// SystemVolumesResult describes the system volumes response
+// SystemVolumesResult describes the system volumes response.
 type SystemVolumesResult struct {
 	ByContainerRole map[string]VolumeInfo `json:"by-container-role"`
 }
 
-// GetSystemVolumes gets information about system volumes
-func (c *Client) GetSystemVolumes(ctx context.Context) (*SystemVolumesResult, error) {
+// EnumerateKeySlots gets information about system volumes.
+func (c *Client) EnumerateKeySlots(ctx context.Context) (*SystemVolumesResult, error) {
 	resp, err := c.doRequest(ctx, http.MethodGet, "/v2/system-volumes", nil, nil)
 	if err != nil {
 		return nil, err
@@ -34,7 +49,7 @@ func (c *Client) GetSystemVolumes(ctx context.Context) (*SystemVolumesResult, er
 	return &volumes, nil
 }
 
-// AddSystemVolumeKeySlots adds keyslots to a system volume
+// AddSystemVolumeKeySlots adds keyslots to a system volume.
 func (c *Client) AddSystemVolumeKeySlots(ctx context.Context, volume string, keySlots []VolumeKeySlot) (string, error) {
 	body := map[string]any{
 		"action":   "add-key",
@@ -50,7 +65,7 @@ func (c *Client) AddSystemVolumeKeySlots(ctx context.Context, volume string, key
 	return resp.Change, nil
 }
 
-// RemoveSystemVolumeKeySlots removes keyslots from a system volume
+// RemoveSystemVolumeKeySlots removes keyslots from a system volume.
 func (c *Client) RemoveSystemVolumeKeySlots(ctx context.Context, volume string, keySlots []VolumeKeySlot) (string, error) {
 	body := map[string]any{
 		"action":   "remove-key",

@@ -60,7 +60,7 @@ func (c *Client) Close() error {
 	return nil
 }
 
-// SetAuthorization sets the authorization credentials
+// SetAuthorization sets the authorization credentials.
 func (c *Client) SetAuthorization(req *http.Request) {
 	// Enable interactive authentication (Polkit)
 	if c.allowInteraction {
@@ -77,7 +77,7 @@ func (c *Client) SetAuthorization(req *http.Request) {
 	}
 }
 
-// LoadAuthFromFile loads authentication credentials from file
+// LoadAuthFromFile loads authentication credentials from file.
 func (c *Client) LoadAuthFromFile(path string) error {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -103,7 +103,7 @@ func (c *Client) LoadAuthFromFile(path string) error {
 	return nil
 }
 
-// LoadAuthFromHome loads authentication credentials from user's home directory
+// LoadAuthFromHome loads authentication credentials from user's home directory.
 func (c *Client) LoadAuthFromHome() error {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -114,22 +114,7 @@ func (c *Client) LoadAuthFromHome() error {
 	return c.LoadAuthFromFile(authPath)
 }
 
-// VolumeKeySlot describes a keyslot configuration
-type VolumeKeySlot struct {
-	Number   int    `json:"number"`
-	Name     string `json:"name,omitempty"`
-	Priority int    `json:"priority,omitempty"`
-}
-
-// KeySlotInfo describes a keyslot in a volume
-type KeySlotInfo struct {
-	Type         string   `json:"type"`
-	AuthMode     string   `json:"auth-mode,omitempty"`
-	PlatformName string   `json:"platform-name,omitempty"`
-	Roles        []string `json:"roles,omitempty"`
-}
-
-// snapdResponse is the base response structure from snapd
+// snapdResponse is the base response structure from snapd.
 type snapdResponse struct {
 	Type       string          `json:"type"`
 	StatusCode int             `json:"status-code"`
@@ -138,14 +123,14 @@ type snapdResponse struct {
 	Change     string          `json:"change,omitempty"`
 }
 
-// errorResponse describes an error response
+// errorResponse describes an error response.
 type errorResponse struct {
 	Message string         `json:"message"`
 	Kind    string         `json:"kind,omitempty"`
 	Value   map[string]any `json:"value,omitempty"`
 }
 
-// SnapdError represents an error from snapd
+// SnapdError represents an error from snapd.
 type SnapdError struct {
 	Message    string
 	Kind       string
@@ -161,8 +146,7 @@ func (e *SnapdError) Error() string {
 	return fmt.Sprintf("snapd error: %s", e.Message)
 }
 
-// TODO: is `any` for body good?
-// doRequest performs an HTTP request to snapd
+// doRequest performs an HTTP request to snapd.
 func (c *Client) doRequest(ctx context.Context, method, path string, query url.Values, body any) (*snapdResponse, error) {
 	var reqBody io.Reader
 	if body != nil {
