@@ -10,7 +10,7 @@ import (
 )
 
 /*
-  TODO: No date or time in log output for stderr
+  TODO: investigate this
   2025/11/20 11:45:59 ERROR flag needs an argument: --file
   11:46:54 ERROR invalid value "asdf" for argument key-id: strconv.ParseInt: parsing "asdf": invalid syntax
 */
@@ -51,13 +51,14 @@ func newRootCmd() cli.Command {
 		UseShortOptionHandling: true,
 		EnableShellCompletion:  true,
 		Commands: []*cli.Command{
-			newStatusCmd(),
-			newCreateKeyCmd(),
 			newCreateEnterpriseKeyCmd(),
-			newRegenerateKeyCmd(),
-			newRegenerateEnterpriseKeyCmd(),
-			newMountVolumeCmd(),
+			newCreateKeyCmd(),
+			newEnumerateCmd(),
 			newGetLuksPassphraseCmd(),
+			newMountVolumeCmd(),
+			newRegenerateEnterpriseKeyCmd(),
+			newRegenerateKeyCmd(),
+			newStatusCmd(),
 		},
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
