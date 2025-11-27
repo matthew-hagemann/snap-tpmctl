@@ -57,8 +57,6 @@ func printTable(data *snapd.SystemVolumesResult) error {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.Header("ContainerRole", "Volume", "VolumeName", "Encrypted", "Name", "AuthMode", "PlatformName", "Roles", "Type")
 
-	fmt.Println(data)
-
 	sortedData := sm.NewFromMap(data.ByContainerRole, func(i, j sm.KV[string, snapd.VolumeInfo]) bool {
 		return i.Key < j.Key
 	})

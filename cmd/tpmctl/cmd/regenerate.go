@@ -9,7 +9,6 @@ import (
 )
 
 func newRegenerateKeyCmd() *cli.Command {
-	// TODO: discuss with the snap team about how the user can get a key id
 	var recoveryKey string
 
 	return &cli.Command{
@@ -24,10 +23,6 @@ func newRegenerateKeyCmd() *cli.Command {
 			},
 		},
 		Action: func(ctx context.Context, c *cli.Command) error {
-			// if err := isValidRecoveryKey(recoveryKey); err != nil {
-			// 	return err
-			// }
-
 			return regenerateKey(ctx, recoveryKey)
 		},
 	}
@@ -43,7 +38,7 @@ func regenerateKey(ctx context.Context, _ string) error {
 
 	key, err := c.GenerateRecoveryKey(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to generate recovery key: %w", err)
 	}
 
 	fmt.Printf("Recovery Key: %s\n", key.RecoveryKey)
@@ -51,10 +46,11 @@ func regenerateKey(ctx context.Context, _ string) error {
 
 	res, err := c.ReplaceRecoveryKey(ctx, key.KeyID, nil)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to replace recovery key: %w", err)
 	}
 
 	fmt.Println(res.Status)
+	fmt.Println(res.Change)
 
 	return nil
 }
@@ -74,10 +70,6 @@ func newRegenerateEnterpriseKeyCmd() *cli.Command {
 			},
 		},
 		Action: func(ctx context.Context, c *cli.Command) error {
-			// if err := isValidRecoveryKey(recoveryKey); err != nil {
-			// 	return err
-			// }
-
 			return regenerateEnterpriseKey(ctx, recoveryKey)
 		},
 	}
@@ -87,19 +79,3 @@ func regenerateEnterpriseKey(_ context.Context, key string) error {
 	fmt.Println("Regenerated enterprise key with id", key)
 	return nil
 }
-
-// func isValidRecoveryKey(k string) error {
-// 	if k == "" {
-// 		return fmt.Errorf("key-id cannot be empty")
-// 	}
-
-// 	matched, err := regexp.MatchString(`^[a-zA-Z0-9_-]{10}$`, k)
-// 	if err != nil {
-// 		return fmt.Errorf("regex validation error: %w", err)
-// 	}
-// 	if !matched {
-// 		return fmt.Errorf("invalid key-id format: must contain only alphanumeric characters, hyphens, or underscores")
-// 	}
-
-// 	return nil
-// }

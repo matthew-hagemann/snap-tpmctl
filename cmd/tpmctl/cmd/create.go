@@ -21,7 +21,7 @@ func newCreateKeyCmd() *cli.Command {
 }
 
 func createKey(ctx context.Context) error {
-	c := snapd.NewClient() // should default be true?
+	c := snapd.NewClient()
 	defer c.Close()
 
 	if err := c.LoadAuthFromHome(); err != nil {
@@ -36,13 +36,12 @@ func createKey(ctx context.Context) error {
 	fmt.Printf("Recovery Key: %s\n", key.RecoveryKey)
 	fmt.Printf("Key ID: %s\n", key.KeyID)
 
-	// TODO: when the API is ready add `add-recovery-key` call
-	// resp, err := c.AddRecoveryKey(ctx, key.KeyID, nil)
-	// if err != nil {
-	// 	return err
-	// }
+	resp, err := c.AddRecoveryKey(ctx, key.KeyID, nil)
+	if err != nil {
+		return fmt.Errorf("failed to add recovery key: %w", err)
+	}
 
-	// fmt.Println(resp)
+	fmt.Println(resp.Status)
 
 	return nil
 }

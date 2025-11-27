@@ -36,7 +36,7 @@ func NewClient(opts ...ClientOption) *Client {
 	client := &Client{
 		socketPath:       defaultSocketPath,
 		userAgent:        defaultUserAgent,
-		allowInteraction: true,
+		allowInteraction: true, // TODO: should default be true?
 	}
 
 	for _, opt := range opts {
