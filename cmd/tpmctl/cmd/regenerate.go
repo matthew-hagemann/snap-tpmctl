@@ -37,19 +37,24 @@ func regenerateKey(ctx context.Context, _ string) error {
 	c := snapd.NewClient()
 	defer c.Close()
 
+	if err := c.LoadAuthFromHome(); err != nil {
+		return err
+	}
+
 	key, err := c.GenerateRecoveryKey(ctx)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(key)
+	fmt.Printf("Recovery Key: %s\n", key.RecoveryKey)
+	fmt.Printf("Key ID: %s\n", key.KeyID)
 
 	res, err := c.ReplaceRecoveryKey(ctx, key.KeyID, nil)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(res)
+	fmt.Println(res.Status)
 
 	return nil
 }

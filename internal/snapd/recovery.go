@@ -40,7 +40,7 @@ func (c *Client) GenerateRecoveryKey(ctx context.Context) (*GenerateRecoveryKeyR
 }
 
 // AddRecoveryKey adds a recovery key to the specified keyslots.
-func (c *Client) AddRecoveryKey(ctx context.Context, keyID string, keySlots []RecoveryKeySlot) (string, error) {
+func (c *Client) AddRecoveryKey(ctx context.Context, keyID string, keySlots []RecoveryKeySlot) (*snapdResponse, error) {
 	body := map[string]any{
 		"action":   "add-recovery-key",
 		"key-id":   keyID,
@@ -49,14 +49,14 @@ func (c *Client) AddRecoveryKey(ctx context.Context, keyID string, keySlots []Re
 
 	resp, err := c.doRequest(ctx, http.MethodPost, "/v2/system-volumes", nil, body)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return resp.Change, nil
+	return resp, nil
 }
 
-// ReplaceRecoveryKey replace a recovery key to the specified keyslots.
-func (c *Client) ReplaceRecoveryKey(ctx context.Context, keyID string, keySlots []RecoveryKeySlot) (string, error) {
+// ReplaceRecoveryKey replaces a recovery key to the specified keyslots.
+func (c *Client) ReplaceRecoveryKey(ctx context.Context, keyID string, keySlots []RecoveryKeySlot) (*snapdResponse, error) {
 	body := map[string]any{
 		"action":   "replace-recovery-key",
 		"key-id":   keyID,
@@ -65,8 +65,8 @@ func (c *Client) ReplaceRecoveryKey(ctx context.Context, keyID string, keySlots 
 
 	resp, err := c.doRequest(ctx, http.MethodPost, "/v2/system-volumes", nil, body)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return resp.Change, nil
+	return resp, nil
 }

@@ -24,12 +24,10 @@ func createKey(ctx context.Context) error {
 	c := snapd.NewClient() // should default be true?
 	defer c.Close()
 
-	// Load authorization for API request
 	if err := c.LoadAuthFromHome(); err != nil {
 		return err
 	}
 
-	// Generate the recovery key
 	key, err := c.GenerateRecoveryKey(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to generate recovery key: %w", err)
