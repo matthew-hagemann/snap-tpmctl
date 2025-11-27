@@ -120,6 +120,10 @@ type snapdResponse struct {
 	Change     string          `json:"change,omitempty"`
 }
 
+func (r *snapdResponse) IsOK() bool {
+	return r.Status == "Accepted" || r.Status == "OK"
+}
+
 // snapdError represents an error from snapd.
 type snapdError struct {
 	Message    string

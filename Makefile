@@ -37,10 +37,10 @@ sync:
 	@rsync $(RSYNC_OPTS) ./ $(VM):$(REMOTE_DIR)
 
 remote-build: sync
-	@ssh $(SSH_OPTS) $(VM) 'cd $(REMOTE_DIR) && mkdir -p bin && go build -o bin/$(BIN_NAME) ./cmd/tpmctl'
+	@ssh $(SSH_OPTS) $(VM) 'cd $(REMOTE_DIR) && mkdir -p bin && go build -o $(LOCAL_BIN) ./cmd/tpmctl'
 
 remote-run: remote-build
-	@ssh $(SSH_OPTS) $(VM) 'cd $(REMOTE_DIR) && ./bin/$(BIN_NAME) $(filter-out $@,$(MAKECMDGOALS))'
+	@ssh $(SSH_OPTS) $(VM) 'cd $(REMOTE_DIR) && $(LOCAL_BIN) $(filter-out $@,$(MAKECMDGOALS))'
 
 remote-test: sync
 	@echo 'Running tests on remote VM...'

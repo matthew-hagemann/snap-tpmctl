@@ -53,6 +53,7 @@ func newRootCmd() cli.Command {
 		Commands: []*cli.Command{
 			newCreateEnterpriseKeyCmd(),
 			newCreateKeyCmd(),
+			newCheckCmd(),
 			newEnumerateCmd(),
 			newGetLuksPassphraseCmd(),
 			newMountVolumeCmd(),

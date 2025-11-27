@@ -22,9 +22,11 @@ type GenerateRecoveryKeyResult struct {
 
 // RecoveryKeyRequest represents a request to manage recovery keys in snapd.
 type RecoveryKeyRequest struct {
-	Action   string            `json:"action"`
-	KeyId    string            `json:"key-id,omitempty"`
-	KeySlots []RecoveryKeySlot `json:"keyslots,omitempty"`
+	Action         string            `json:"action"`
+	KeyId          string            `json:"key-id,omitempty"`
+	KeySlots       []RecoveryKeySlot `json:"keyslots,omitempty"`
+	RecoveryKey    string            `json:"recovery-key,omitempty"`
+	ContainerRoles []string          `json:"container-role,omitempty"`
 }
 
 // GenerateRecoveryKey creates a new recovery key and returns the key and its ID.
@@ -68,6 +70,22 @@ func (c *Client) ReplaceRecoveryKey(ctx context.Context, keyID string, keySlots 
 		Action:   "replace-recovery-key",
 		KeyId:    keyID,
 		KeySlots: keySlots,
+	}
+
+	resp, err := c.doRequest(ctx, http.MethodPost, "/v2/system-volumes", nil, body)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// CheckRecoveryKey check a recovery key to the specified keyslots.
+func (c *Client) CheckRecoveryKey(ctx context.Context, recoveryKey string, containerRoles []string) (*snapdResponse, error) {
+	body := RecoveryKeyRequest{
+		Action:         "check-recovery-key",
+		RecoveryKey:    recoveryKey,
+		ContainerRoles: containerRoles,
 	}
 
 	resp, err := c.doRequest(ctx, http.MethodPost, "/v2/system-volumes", nil, body)
