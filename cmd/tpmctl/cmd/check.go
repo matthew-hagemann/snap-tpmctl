@@ -15,7 +15,7 @@ import (
 
 func newCheckCmd() *cli.Command {
 	return &cli.Command{
-		Name:    "check-recovery-key",
+		Name:    "check-key",
 		Usage:   "Check recovery key",
 		Suggest: true,
 		Action: func(ctx context.Context, cmd *cli.Command) error {
