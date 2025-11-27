@@ -25,7 +25,7 @@ func createKey(ctx context.Context) error {
 	defer c.Close()
 
 	if err := c.LoadAuthFromHome(); err != nil {
-		return err
+		return fmt.Errorf("failed to load auth: %w", err)
 	}
 
 	key, err := c.GenerateRecoveryKey(ctx)

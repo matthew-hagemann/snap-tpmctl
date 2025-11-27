@@ -29,11 +29,15 @@ func newRegenerateKeyCmd() *cli.Command {
 }
 
 func regenerateKey(ctx context.Context, _ string) error {
+	// TODO: decide if we want to match exactly the security center
+	// behaviour showing the key, waiting for user confirmation and then
+	// replace the key and removing it from the screen
+
 	c := snapd.NewClient()
 	defer c.Close()
 
 	if err := c.LoadAuthFromHome(); err != nil {
-		return err
+		return fmt.Errorf("failed to load auth: %w", err)
 	}
 
 	key, err := c.GenerateRecoveryKey(ctx)
