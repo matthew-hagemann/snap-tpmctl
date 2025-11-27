@@ -34,6 +34,13 @@ type SystemVolumesResult struct {
 	ByContainerRole map[string]VolumeInfo `json:"by-container-role"`
 }
 
+// SystemVolumesRequest represents a request to manage volumes in snapd.
+type SystemVolumesRequest struct {
+	Action   string          `json:"action"`
+	Volume   string          `json:"volume,omitempty"`
+	KeySlots []VolumeKeySlot `json:"keyslots,omitempty"`
+}
+
 // EnumerateKeySlots gets information about system volumes.
 func (c *Client) EnumerateKeySlots(ctx context.Context) (*SystemVolumesResult, error) {
 	resp, err := c.doRequest(ctx, http.MethodGet, "/v2/system-volumes", nil, nil)
@@ -50,33 +57,33 @@ func (c *Client) EnumerateKeySlots(ctx context.Context) (*SystemVolumesResult, e
 }
 
 // AddSystemVolumeKeySlots adds keyslots to a system volume.
-func (c *Client) AddSystemVolumeKeySlots(ctx context.Context, volume string, keySlots []VolumeKeySlot) (string, error) {
-	body := map[string]any{
-		"action":   "add-key",
-		"volume":   volume,
-		"keyslots": keySlots,
+func (c *Client) AddSystemVolumeKeySlots(ctx context.Context, volume string, keySlots []VolumeKeySlot) (*snapdResponse, error) {
+	body := SystemVolumesRequest{
+		Action:   "add-key",
+		Volume:   volume,
+		KeySlots: keySlots,
 	}
 
 	resp, err := c.doRequest(ctx, http.MethodPost, "/v2/system-volumes", nil, body)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return resp.Change, nil
+	return resp, nil
 }
 
 // RemoveSystemVolumeKeySlots removes keyslots from a system volume.
-func (c *Client) RemoveSystemVolumeKeySlots(ctx context.Context, volume string, keySlots []VolumeKeySlot) (string, error) {
-	body := map[string]any{
-		"action":   "remove-key",
-		"volume":   volume,
-		"keyslots": keySlots,
+func (c *Client) RemoveSystemVolumeKeySlots(ctx context.Context, volume string, keySlots []VolumeKeySlot) (*snapdResponse, error) {
+	body := SystemVolumesRequest{
+		Action:   "remove-key",
+		Volume:   volume,
+		KeySlots: keySlots,
 	}
 
 	resp, err := c.doRequest(ctx, http.MethodPost, "/v2/system-volumes", nil, body)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return resp.Change, nil
+	return resp, nil
 }

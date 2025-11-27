@@ -30,6 +30,10 @@ func enumerate(ctx context.Context) error {
 	c := snapd.NewClient()
 	defer c.Close()
 
+	if err := c.LoadAuthFromHome(); err != nil {
+		return err
+	}
+
 	res, err := c.EnumerateKeySlots(ctx)
 	if err != nil {
 		return err
@@ -52,6 +56,8 @@ func printTable(data *snapd.SystemVolumesResult) error {
 
 	table := tablewriter.NewWriter(os.Stdout)
 	table.Header("ContainerRole", "Volume", "VolumeName", "Encrypted", "Name", "AuthMode", "PlatformName", "Roles", "Type")
+
+	fmt.Println(data)
 
 	sortedData := sm.NewFromMap(data.ByContainerRole, func(i, j sm.KV[string, snapd.VolumeInfo]) bool {
 		return i.Key < j.Key
