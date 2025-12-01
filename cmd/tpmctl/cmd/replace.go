@@ -55,13 +55,13 @@ func replacePassphrase(ctx context.Context, oldPassphrase, newPassphrase string)
 		return fmt.Errorf("weak passphrase, make it longer or more complex")
 	}
 
-	res, err = c.ReplacePassphrase(ctx, oldPassphrase, newPassphrase, nil)
+	ares, err := c.ReplacePassphrase(ctx, oldPassphrase, newPassphrase, nil)
 	if err != nil {
 		return fmt.Errorf("failed to change passphrase: %w", err)
 	}
 
 	msg := "Unable to replace passphrase"
-	if res.IsOK() {
+	if ares.IsOK() {
 		msg = "Passphrase replaced successfully"
 	}
 

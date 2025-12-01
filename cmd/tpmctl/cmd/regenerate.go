@@ -54,7 +54,7 @@ func regenerateKey(ctx context.Context, _ string) error {
 	}
 
 	fmt.Println(res.Status)
-	fmt.Println(res.Change)
+	fmt.Println(res.Summary)
 
 	return nil
 }

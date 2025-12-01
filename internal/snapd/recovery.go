@@ -49,14 +49,15 @@ func (c *Client) GenerateRecoveryKey(ctx context.Context) (*GenerateRecoveryKeyR
 }
 
 // AddRecoveryKey adds a recovery key to the specified keyslots.
-func (c *Client) AddRecoveryKey(ctx context.Context, keyID string, keySlots []KeySlot) (*Response, error) {
+// This is an async operation that waits for completion.
+func (c *Client) AddRecoveryKey(ctx context.Context, keyID string, keySlots []KeySlot) (*AsyncResponse, error) {
 	body := RecoveryKeyRequest{
 		Action:   "add-recovery-key",
 		KeyID:    keyID,
 		KeySlots: keySlots,
 	}
 
-	resp, err := c.doRequest(ctx, http.MethodPost, "/v2/system-volumes", nil, body)
+	resp, err := c.doAsyncRequest(ctx, http.MethodPost, "/v2/system-volumes", nil, body)
 	if err != nil {
 		return nil, err
 	}
@@ -65,14 +66,15 @@ func (c *Client) AddRecoveryKey(ctx context.Context, keyID string, keySlots []Ke
 }
 
 // ReplaceRecoveryKey replaces a recovery key to the specified keyslots.
-func (c *Client) ReplaceRecoveryKey(ctx context.Context, keyID string, keySlots []KeySlot) (*Response, error) {
+// This is an async operation that waits for completion.
+func (c *Client) ReplaceRecoveryKey(ctx context.Context, keyID string, keySlots []KeySlot) (*AsyncResponse, error) {
 	body := RecoveryKeyRequest{
 		Action:   "replace-recovery-key",
 		KeyID:    keyID,
 		KeySlots: keySlots,
 	}
 
-	resp, err := c.doRequest(ctx, http.MethodPost, "/v2/system-volumes", nil, body)
+	resp, err := c.doAsyncRequest(ctx, http.MethodPost, "/v2/system-volumes", nil, body)
 	if err != nil {
 		return nil, err
 	}

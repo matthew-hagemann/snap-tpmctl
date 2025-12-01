@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 const (
@@ -126,6 +127,25 @@ func (r *Response) IsOK() bool {
 	return r.Status == "Accepted" || r.Status == "OK" || r.StatusCode == 200 || r.StatusCode == 202
 }
 
+// TODO: better fields parsing with status-code and type
+
+// AsyncResponse represents the status of a change.
+type AsyncResponse struct {
+	ID      string `json:"id"`
+	Kind    string `json:"kind"`
+	Summary string `json:"summary"`
+	Status  string `json:"status"`
+	Ready   bool   `json:"ready"`
+	Err     string `json:"err,omitempty"`
+	// Tasks   json.RawMessage `json:"tasks,omitempty"`
+
+}
+
+// IsOK checks if the asynchronous operation completed successfully.
+func (r *AsyncResponse) IsOK() bool {
+	return r.Ready && r.Status == "Done"
+}
+
 // snapdError represents an error from snapd.
 type snapdError struct {
 	Message    string
@@ -212,7 +232,7 @@ func (c *Client) LoadAuthFromHome() error {
 
 // doRequest performs an HTTP request to snapd.
 //
-//nolint:unparam // path parameter may vary in future
+
 func (c *Client) doRequest(ctx context.Context, method, path string, query url.Values, body any) (*Response, error) {
 	reqBody, err := c.NewRequestBody(body)
 	if err != nil {
@@ -246,4 +266,56 @@ func (c *Client) doRequest(ctx context.Context, method, path string, query url.V
 	}
 
 	return snapdResp, nil
+}
+
+// GetChange retrieves the current status of a change by its ID.
+func (c *Client) GetChange(ctx context.Context, changeID string) (*AsyncResponse, error) {
+	path := fmt.Sprintf("/v2/changes/%s", changeID)
+	resp, err := c.doRequest(ctx, http.MethodGet, path, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var aresp AsyncResponse
+	if err := json.Unmarshal(resp.Result, &aresp); err != nil {
+		return nil, err
+	}
+
+	return &aresp, nil
+}
+
+// TODO: is it ok doing it in this way? or better to call getchange and poll inside each request?
+
+// doAsyncRequest performs an HTTP request to snapd and waits for the async change to complete.
+// It polls the change status every 50ms until the change is complete.
+func (c *Client) doAsyncRequest(ctx context.Context, method, path string, query url.Values, body any) (*AsyncResponse, error) {
+	resp, err := c.doRequest(ctx, method, path, query, body)
+	if err != nil {
+		return nil, err
+	}
+
+	// If no change ID is returned, the API is synchronous (unexpected for async operations)
+	if resp.Change == "" {
+		return nil, fmt.Errorf("expected async operation but no change ID was returned")
+	}
+
+	// TODO: find a way to do it without polling (?)
+	ticker := time.NewTicker(50 * time.Millisecond)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-ticker.C:
+			aresp, err := c.GetChange(ctx, resp.Change)
+			if err != nil {
+				return nil, err
+			}
+
+			if aresp.Ready {
+				return aresp, nil
+			}
+		}
+	}
 }

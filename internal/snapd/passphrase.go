@@ -15,7 +15,8 @@ type PassphraseRequest struct {
 }
 
 // ReplacePassphrase replaces a passphrase to the specified keyslots.
-func (c *Client) ReplacePassphrase(ctx context.Context, oldPassphrase string, newPassphrase string, keySlots []KeySlot) (*Response, error) {
+// This is an async operation that waits for completion.
+func (c *Client) ReplacePassphrase(ctx context.Context, oldPassphrase string, newPassphrase string, keySlots []KeySlot) (*AsyncResponse, error) {
 	body := PassphraseRequest{
 		Action:        "change-passphrase",
 		NewPassphrase: newPassphrase,
@@ -23,7 +24,7 @@ func (c *Client) ReplacePassphrase(ctx context.Context, oldPassphrase string, ne
 		KeySlots:      keySlots,
 	}
 
-	resp, err := c.doRequest(ctx, http.MethodPost, "/v2/system-volumes", nil, body)
+	resp, err := c.doAsyncRequest(ctx, http.MethodPost, "/v2/system-volumes", nil, body)
 	if err != nil {
 		return nil, err
 	}
