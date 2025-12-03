@@ -4,6 +4,7 @@ go 1.25.4
 
 require (
 	github.com/egregors/sortedmap v0.3.1
+	github.com/nalgeon/be v0.3.0
 	github.com/olekukonko/tablewriter v1.1.1
 	github.com/stretchr/testify v1.11.1
 	github.com/urfave/cli/v3 v3.6.1
@@ -18,7 +19,6 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mattn/go-runewidth v0.0.19 // indirect
-	github.com/nalgeon/be v0.3.0 // indirect
 	github.com/olekukonko/cat v0.0.0-20250911104152-50322a0618f6 // indirect
 	github.com/olekukonko/errors v1.1.0 // indirect
 	github.com/olekukonko/ll v0.1.2 // indirect

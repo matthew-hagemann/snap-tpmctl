@@ -38,7 +38,7 @@ func newCreateKeyCmd() *cli.Command {
 	}
 }
 
-// FIXME: Keep io here
+// FIXME: Keep io here.
 func createKey(ctx context.Context, client keyCreator, recoveryKeyName string) error {
 	if err := client.LoadAuthFromHome(); err != nil {
 		return fmt.Errorf("failed to load auth: %w", err)
