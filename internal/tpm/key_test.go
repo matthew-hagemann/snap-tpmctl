@@ -1,40 +1,27 @@
-package cmd_test
+package tpm_test
 
 import (
 	"context"
 	"testing"
 
 	"github.com/nalgeon/be"
-	"snap-tpmctl/cmd/tpmctl/cmd"
 	"snap-tpmctl/internal/testutils"
+	"snap-tpmctl/internal/tpm"
 )
 
-func TestCreateKey(t *testing.T) {
+func TestValidateRecoveryKeyName(t *testing.T) {
 	t.Parallel()
 
 	tests := map[string]struct {
 		recoveryKeyName string
-
-		authFails        bool
-		generateKeyFails bool
-		enumerateFails   bool
-		addKeyFails      bool
-
-		wantErr bool
+		enumerateFails  bool
+		wantErr         bool
 	}{
-		// Success cases
 		"Success": {
 			recoveryKeyName: "my-key",
 		},
-
-		// FIXME: drop wantInErr
-		// Validation errors
 		"Error when name empty": {
 			recoveryKeyName: "",
-			wantErr:         true,
-		},
-		"Error when name starts with snap": {
-			recoveryKeyName: "snap-key",
 			wantErr:         true,
 		},
 		"Error when name starts with snapd": {
@@ -45,30 +32,57 @@ func TestCreateKey(t *testing.T) {
 			recoveryKeyName: "default-key",
 			wantErr:         true,
 		},
-		"Error when name matches additional recovery": {
+		"Error when name matches existing recovery Key": {
 			recoveryKeyName: "additional-recovery",
 			wantErr:         true,
 		},
-
-		// Snapd errors
-		"Error when auth fails": {
-			recoveryKeyName: "my-key",
-			authFails:       true,
-			wantErr:         true,
-		},
-
-		"Error when generate key fails": {
-			recoveryKeyName:  "my-key",
-			generateKeyFails: true,
-			wantErr:          true,
-		},
-
 		"Error when enumerate fails": {
 			recoveryKeyName: "my-key",
 			enumerateFails:  true,
 			wantErr:         true,
 		},
+	}
 
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			ctx := context.Background()
+
+			// Configure mock based on test case flags
+			mockClient := testutils.NewMockSnapdClient()
+			mockClient.EnumerateError = tc.enumerateFails
+
+			err := tpm.ValidateRecoveryKeyName(ctx, mockClient, tc.recoveryKeyName)
+
+			if tc.wantErr {
+				be.Err(t, err)
+				return
+			}
+			be.Err(t, err, nil)
+		})
+	}
+}
+
+func TestCreateKey(t *testing.T) {
+	t.Parallel()
+
+	tests := map[string]struct {
+		recoveryKeyName string
+
+		generateKeyFails bool
+		addKeyFails      bool
+
+		wantErr bool
+	}{
+		"Success": {
+			recoveryKeyName: "my-key",
+		},
+		"Error when generate key fails": {
+			recoveryKeyName:  "my-key",
+			generateKeyFails: true,
+			wantErr:          true,
+		},
 		"Error when add key fails": {
 			recoveryKeyName: "my-key",
 			addKeyFails:     true,
@@ -84,14 +98,11 @@ func TestCreateKey(t *testing.T) {
 			mockClient := testutils.NewMockSnapdClient()
 
 			// Configure mock based on test case flags
-			mockClient.LoadAuthError = tc.authFails
 			mockClient.GenerateKeyError = tc.generateKeyFails
-			mockClient.EnumerateError = tc.enumerateFails
 			mockClient.AddKeyError = tc.addKeyFails
 
-			err := cmd.CreateKey(ctx, mockClient, tc.recoveryKeyName)
+			_, err := tpm.CreateKey(ctx, mockClient, tc.recoveryKeyName)
 
-			// FIXME: this pattern needs work
 			if tc.wantErr {
 				be.Err(t, err)
 				return
