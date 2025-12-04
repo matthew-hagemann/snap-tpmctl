@@ -14,6 +14,15 @@ type PassphraseRequest struct {
 	Passphrase    string    `json:"passphrase,omitempty"`
 }
 
+// PinRequest represents a request to manage passphrase in snapd.
+type PinRequest struct {
+	Action   string    `json:"action"`
+	KeySlots []KeySlot `json:"keyslots,omitempty"`
+	NewPin   string    `json:"new-passphrase,omitempty"`
+	OldPin   string    `json:"old-passphrase,omitempty"`
+	Pin      string    `json:"passphrase,omitempty"`
+}
+
 // ReplacePassphrase replaces a passphrase to the specified keyslots.
 // This is an async operation that waits for completion.
 func (c *Client) ReplacePassphrase(ctx context.Context, oldPassphrase string, newPassphrase string, keySlots []KeySlot) (*AsyncResponse, error) {
@@ -44,6 +53,21 @@ func (c *Client) CheckPassphrase(ctx context.Context, passphrase string) (*Respo
 	body := PassphraseRequest{
 		Action:     "check-passphrase",
 		Passphrase: passphrase,
+	}
+
+	resp, err := c.doRequest(ctx, http.MethodPost, "/v2/system-volumes", nil, body)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// CheckPIN checks if the provided PIN is valid.
+func (c *Client) CheckPIN(ctx context.Context, passphrase string) (*Response, error) {
+	body := PinRequest{
+		Action: "check-pin",
+		Pin:    passphrase,
 	}
 
 	resp, err := c.doRequest(ctx, http.MethodPost, "/v2/system-volumes", nil, body)
