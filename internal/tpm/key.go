@@ -10,11 +10,9 @@ import (
 
 // keyCreator defines the interface for snapd operations needed for key management.
 type keyCreator interface {
-	LoadAuthFromHome() error
 	GenerateRecoveryKey(ctx context.Context) (*snapd.GenerateRecoveryKeyResult, error)
 	EnumerateKeySlots(ctx context.Context) (*snapd.SystemVolumesResult, error)
 	AddRecoveryKey(ctx context.Context, keyID string, slots []snapd.KeySlot) (*snapd.AsyncResponse, error)
-	Close() error
 }
 
 // CreateKeyResult contains the result of creating a recovery key.
@@ -53,7 +51,7 @@ func ValidateRecoveryKeyName(ctx context.Context, client keyCreator, recoveryKey
 	return nil
 }
 
-// CreateKey creates a new recovery key with the given name.
+// CreateKey creates a new recovery key with the given name. Input should be validated using [ValidateRecoveryKeyName] first.
 func CreateKey(ctx context.Context, client keyCreator, recoveryKeyName string) (result *CreateKeyResult, err error) {
 	key, err := client.GenerateRecoveryKey(ctx)
 	if err != nil {

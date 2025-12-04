@@ -24,8 +24,8 @@ func TestValidateRecoveryKeyName(t *testing.T) {
 			recoveryKeyName: "",
 			wantErr:         true,
 		},
-		"Error when name starts with snapd": {
-			recoveryKeyName: "snapd-key",
+		"Error when name starts with snap": {
+			recoveryKeyName: "snap-key",
 			wantErr:         true,
 		},
 		"Error when name starts with default": {
@@ -101,13 +101,16 @@ func TestCreateKey(t *testing.T) {
 			mockClient.GenerateKeyError = tc.generateKeyFails
 			mockClient.AddKeyError = tc.addKeyFails
 
-			_, err := tpm.CreateKey(ctx, mockClient, tc.recoveryKeyName)
+			res, err := tpm.CreateKey(ctx, mockClient, tc.recoveryKeyName)
 
 			if tc.wantErr {
 				be.Err(t, err)
 				return
 			}
 			be.Err(t, err, nil)
+			be.Equal(t, "test-key-id-12345", res.KeyID)
+			be.Equal(t, "12345-67890-12345-67890-12345-67890-12345-67890", res.RecoveryKey)
+			be.Equal(t, "Done", res.Status)
 		})
 	}
 }
