@@ -10,8 +10,8 @@ import (
 	"snap-tpmctl/internal/snapd"
 )
 
-// passphraseReplacer defines the interface for snapd operations needed for key management.
-type passphraseReplacer interface {
+// authReplacer defines the interface for snapd operations needed for key management.
+type authReplacer interface {
 	CheckPassphrase(ctx context.Context, passphrase string) (*snapd.Response, error)
 	CheckPIN(ctx context.Context, pin string) (*snapd.Response, error)
 	ReplacePassphrase(ctx context.Context, oldPassphrase string, newPassphrase string, keySlots []snapd.KeySlot) (*snapd.AsyncResponse, error)
@@ -67,7 +67,7 @@ func handleValidationError(err error, authMode string) error {
 }
 
 // IsValidPassphrase validates that the passphrase and confirmation match and are not empty.
-func IsValidPassphrase(ctx context.Context, client passphraseReplacer, passphrase, confirm string) error {
+func IsValidPassphrase(ctx context.Context, client authReplacer, passphrase, confirm string) error {
 	if passphrase == "" || confirm == "" {
 		return fmt.Errorf("passphrase cannot be empty, try again")
 	}
@@ -89,7 +89,7 @@ func IsValidPassphrase(ctx context.Context, client passphraseReplacer, passphras
 }
 
 // IsValidPIN validates that the PIN and confirmation match and are not empty.
-func IsValidPIN(ctx context.Context, client passphraseReplacer, pin, confirm string) error {
+func IsValidPIN(ctx context.Context, client authReplacer, pin, confirm string) error {
 	if pin == "" || confirm == "" {
 		return fmt.Errorf("PIN cannot be empty, try again")
 	}
@@ -118,28 +118,28 @@ func IsValidPIN(ctx context.Context, client passphraseReplacer, pin, confirm str
 }
 
 // ReplacePassphrase replaces the passphrase using the provided client.
-func ReplacePassphrase(ctx context.Context, client passphraseReplacer, oldPassphrase, newPassphrase string) error {
+func ReplacePassphrase(ctx context.Context, client authReplacer, oldPassphrase, newPassphrase string) error {
 	ares, err := client.ReplacePassphrase(ctx, oldPassphrase, newPassphrase, nil)
 	if err != nil {
 		return fmt.Errorf("failed to change passphrase: %w", err)
 	}
 
 	if !ares.IsOK() {
-		return fmt.Errorf("unable to replace passphrase")
+		return fmt.Errorf("unable to replace passphrase: %s", ares.Err)
 	}
 
 	return nil
 }
 
 // ReplacePIN replaces the PIN using the provided client.
-func ReplacePIN(ctx context.Context, client passphraseReplacer, oldPin, newPin string) error {
+func ReplacePIN(ctx context.Context, client authReplacer, oldPin, newPin string) error {
 	ares, err := client.ReplacePIN(ctx, oldPin, newPin, nil)
 	if err != nil {
 		return fmt.Errorf("failed to change PIN: %w", err)
 	}
 
 	if !ares.IsOK() {
-		return fmt.Errorf("unable to replace PIN")
+		return fmt.Errorf("unable to replace PIN: %s", ares.Err)
 	}
 
 	return nil

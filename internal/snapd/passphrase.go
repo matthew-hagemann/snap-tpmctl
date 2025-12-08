@@ -14,7 +14,7 @@ type PassphraseRequest struct {
 	Passphrase    string    `json:"passphrase,omitempty"`
 }
 
-// PINRequest represents a request to manage a PINs in snapd.
+// PINRequest represents a request to manage PINs in snapd.
 type PINRequest struct {
 	Action   string    `json:"action"`
 	KeySlots []KeySlot `json:"keyslots,omitempty"`

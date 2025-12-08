@@ -10,6 +10,7 @@ import (
 	"snap-tpmctl/internal/tui"
 )
 
+//nolint:dupl // PIN and passphrase commands have intentionally similar structure
 func newReplacePassphraseCmd() *cli.Command {
 	return &cli.Command{
 		Name:  "replace-passphrase",
@@ -42,11 +43,16 @@ func newReplacePassphraseCmd() *cli.Command {
 				return err
 			}
 
-			return tpm.ReplacePassphrase(ctx, c, oldPassphrase, newPassphrase)
+			if err := tpm.ReplacePassphrase(ctx, c, oldPassphrase, newPassphrase); err != nil {
+				return err
+			}
+			fmt.Println("Passphrase replaced successfully")
+			return nil
 		},
 	}
 }
 
+//nolint:dupl // PIN and passphrase commands have intentionally similar structure
 func newReplacePinCmd() *cli.Command {
 	return &cli.Command{
 		Name:  "replace-pin",
@@ -79,7 +85,11 @@ func newReplacePinCmd() *cli.Command {
 				return err
 			}
 
-			return tpm.ReplacePIN(ctx, c, oldPin, newPin)
+			if err := tpm.ReplacePIN(ctx, c, oldPin, newPin); err != nil {
+				return err
+			}
+			fmt.Println("PIN replaced successfully")
+			return nil
 		},
 	}
 }
