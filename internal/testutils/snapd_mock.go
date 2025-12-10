@@ -263,6 +263,11 @@ func (m MockSnapdClient) ReplacePIN(ctx context.Context, oldPin string, newPin s
 	return m.asyncResp, nil
 }
 
+// ReplacePlatformKey simulates replacing a platform key.
+func (m MockSnapdClient) ReplacePlatformKey(ctx context.Context, authMode snapd.AuthMode, pin, passphrase string) (*snapd.AsyncResponse, error) {
+	return m.asyncResp, nil
+}
+
 // mustMarshalJSONForMock marshals a value to JSON for use in mock responses.
 func mustMarshalJSONForMock(v any) json.RawMessage {
 	data, err := json.Marshal(v)
