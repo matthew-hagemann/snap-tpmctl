@@ -46,10 +46,9 @@ func newAddPassphraseCmd() *cli.Command {
 				return err
 			}
 
-			//TODO:
-			// if err := tmp.AddPassphrase(ctx, c, newPassphrase); err != nil {
-			// 	return err
-			// }
+			if err := tpm.AddPassphrase(ctx, c, newPassphrase); err != nil {
+				return err
+			}
 			fmt.Println("Passphrase added successfully")
 			return nil
 		},
@@ -90,10 +89,9 @@ func newAddPINCmd() *cli.Command {
 			if err := tpm.IsValidPIN(ctx, c, newPin, confirmPin); err != nil {
 				return err
 			}
-			// TODO:
-			// if err := tmp.AddPIN(ctx, c, newPIN); err != nil {
-			// 	return err
-			// }
+			if err := tpm.AddPIN(ctx, c, newPin); err != nil {
+				return err
+			}
 			fmt.Println("PIN added successfully")
 			return nil
 		},

@@ -6,7 +6,6 @@ import (
 	"os"
 	"snap-tpmctl/internal/snapd"
 	"snap-tpmctl/internal/tpm"
-	"snap-tpmctl/internal/tui"
 
 	"github.com/urfave/cli/v3"
 )
@@ -32,10 +31,9 @@ func newRemovePassphraseCmd() *cli.Command {
 			// TODO:
 			// Validate auth is a Passphrase
 
-			//TODO:
-			// if err := tmp.AddPassphrase(ctx, c, newPassphrase); err != nil {
-			// 	return err
-			// }
+			if err := tpm.RemovePassphrase(ctx, c); err != nil {
+				return err
+			}
 			fmt.Println("Passphrase removed successfully")
 			return nil
 		},
@@ -63,10 +61,9 @@ func newRemovePINCmd() *cli.Command {
 			// TODO:
 			// Validate auth is a PIN
 
-			// TODO:
-			// if err := tmp.AddPIN(ctx, c, newPIN); err != nil {
-			// 	return err
-			// }
+			if err := tpm.RemovePIN(ctx, c); err != nil {
+				return err
+			}
 			fmt.Println("PIN removed successfully")
 			return nil
 		},
