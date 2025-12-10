@@ -88,3 +88,147 @@ func TestReplacePIN(t *testing.T) {
 		})
 	}
 }
+
+func TestAddPIN(t *testing.T) {
+	t.Parallel()
+
+	tests := map[string]struct {
+		replacePlatformKeyError bool
+		replacePlatformKeyNotOK bool
+
+		wantErr bool
+	}{
+		"Adds PIN authentication": {},
+
+		"Error when snapd down":      {replacePlatformKeyError: true, wantErr: true},
+		"Error when response not ok": {replacePlatformKeyNotOK: true, wantErr: true},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			ctx := context.Background()
+			mockClient := testutils.NewMockSnapdClient(testutils.MockConfig{
+				ReplacePlatformKeyError: tc.replacePlatformKeyError,
+				ReplacePlatformKeyNotOK: tc.replacePlatformKeyNotOK,
+			})
+
+			err := tpm.AddPIN(ctx, mockClient, "123456")
+
+			if tc.wantErr {
+				be.Err(t, err)
+				return
+			}
+			be.Err(t, err, nil)
+		})
+	}
+}
+
+func TestRemovePIN(t *testing.T) {
+	t.Parallel()
+
+	tests := map[string]struct {
+		replacePlatformKeyError bool
+		replacePlatformKeyNotOK bool
+
+		wantErr bool
+	}{
+		"Removes PIN authentication": {},
+
+		"Error when snapd down":      {replacePlatformKeyError: true, wantErr: true},
+		"Error when response not ok": {replacePlatformKeyNotOK: true, wantErr: true},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			ctx := context.Background()
+			mockClient := testutils.NewMockSnapdClient(testutils.MockConfig{
+				ReplacePlatformKeyError: tc.replacePlatformKeyError,
+				ReplacePlatformKeyNotOK: tc.replacePlatformKeyNotOK,
+			})
+
+			err := tpm.RemovePIN(ctx, mockClient)
+
+			if tc.wantErr {
+				be.Err(t, err)
+				return
+			}
+			be.Err(t, err, nil)
+		})
+	}
+}
+
+func TestAddPassphrase(t *testing.T) {
+	t.Parallel()
+
+	tests := map[string]struct {
+		replacePlatformKeyError bool
+		replacePlatformKeyNotOK bool
+
+		wantErr bool
+	}{
+		"Adds passphrase authentication": {},
+
+		"Error when snapd down":      {replacePlatformKeyError: true, wantErr: true},
+		"Error when response not ok": {replacePlatformKeyNotOK: true, wantErr: true},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			ctx := context.Background()
+			mockClient := testutils.NewMockSnapdClient(testutils.MockConfig{
+				ReplacePlatformKeyError: tc.replacePlatformKeyError,
+				ReplacePlatformKeyNotOK: tc.replacePlatformKeyNotOK,
+			})
+
+			err := tpm.AddPassphrase(ctx, mockClient, "my-secure-passphrase")
+
+			if tc.wantErr {
+				be.Err(t, err)
+				return
+			}
+			be.Err(t, err, nil)
+		})
+	}
+}
+
+func TestRemovePassphrase(t *testing.T) {
+	t.Parallel()
+
+	tests := map[string]struct {
+		replacePlatformKeyError bool
+		replacePlatformKeyNotOK bool
+
+		wantErr bool
+	}{
+		"Removes passphrase authentication": {},
+
+		"Error when snapd down":      {replacePlatformKeyError: true, wantErr: true},
+		"Error when response not ok": {replacePlatformKeyNotOK: true, wantErr: true},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			ctx := context.Background()
+			mockClient := testutils.NewMockSnapdClient(testutils.MockConfig{
+				ReplacePlatformKeyError: tc.replacePlatformKeyError,
+				ReplacePlatformKeyNotOK: tc.replacePlatformKeyNotOK,
+			})
+
+			err := tpm.RemovePassphrase(ctx, mockClient)
+
+			if tc.wantErr {
+				be.Err(t, err)
+				return
+			}
+			be.Err(t, err, nil)
+		})
+	}
+}

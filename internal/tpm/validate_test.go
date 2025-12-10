@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/nalgeon/be"
+	"snap-tpmctl/internal/snapd"
 	"snap-tpmctl/internal/testutils"
 	"snap-tpmctl/internal/tpm"
 )
@@ -182,6 +183,64 @@ func TestValidateRecoveryKeyName(t *testing.T) {
 			})
 
 			err := tpm.ValidateRecoveryKeyName(ctx, mockClient, tc.recoveryKeyName)
+
+			if tc.wantErr {
+				be.Err(t, err)
+				return
+			}
+			be.Err(t, err, nil)
+		})
+	}
+}
+
+func TestValidateAuthMode(t *testing.T) {
+	t.Parallel()
+
+	tests := map[string]struct {
+		expectedAuthMode snapd.AuthMode
+		mockAuthMode     string
+		enumerateFails   bool
+		wantErr          bool
+	}{
+		"Validates passphrase authentication in use": {
+			expectedAuthMode: snapd.AuthModePassphrase,
+		},
+		"Validates PIN authentication in use": {
+			expectedAuthMode: snapd.AuthModePin,
+		},
+		"Validates no authentication in use": {
+			expectedAuthMode: snapd.AuthModeNone,
+		},
+		"Error when enumerate fails": {
+			expectedAuthMode: snapd.AuthModePassphrase,
+			enumerateFails:   true,
+			wantErr:          true,
+		},
+		"Error when auth mode mismatch": {
+			expectedAuthMode: snapd.AuthModePin,
+			mockAuthMode:     "passphrase",
+			wantErr:          true,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			ctx := context.Background()
+
+			// Default mock auth mode to expected if not specified
+			mockAuthMode := tc.mockAuthMode
+			if mockAuthMode == "" {
+				mockAuthMode = string(tc.expectedAuthMode)
+			}
+
+			mockClient := testutils.NewMockSnapdClient(testutils.MockConfig{
+				EnumerateError: tc.enumerateFails,
+				AuthMode:       mockAuthMode,
+			})
+
+			err := tpm.ValidateAuthMode(ctx, mockClient, tc.expectedAuthMode)
 
 			if tc.wantErr {
 				be.Err(t, err)
