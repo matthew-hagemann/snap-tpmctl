@@ -57,7 +57,7 @@ func WithSpinnerResult[T any](message string, fn func() (T, error)) (T, error) {
 	spinnerChars := []string{"-", "\\", "|", "/"}
 	i := 0
 
-	// Timer to triger changing the spinner char to produce a loading spinner
+	// Timer to trigger changing the spinner char to produce a loading spinner
 	ticker := time.NewTicker(100 * time.Millisecond)
 	defer ticker.Stop()
 
