@@ -14,16 +14,17 @@ description: >
 
 ## Step-by-step workflow
 
-### 1. Find recurring co-authors
+### 1. Find the Live Share co-author
 
-Before committing, look up known collaborators in git history:
+Ask the user who is currently connected on Live Share (it isn't always the same person).
+Once you have the name, look up their email from git history:
 
 ```bash
-git log --format="%an <%ae>" | sort -u
+git log --format="%an <%ae>" | grep -i "<name>" | head -1
 ```
 
-Didier Roche-Tolomelli's email is `didier.roche@canonical.com`.
-Always co-author commits with **both** Didier and Copilot.
+If no match is found in git history, ask the user for the email directly.
+Always co-author commits with **both** the Live Share participant and Copilot.
 
 ### 2. Stage and commit
 
@@ -34,7 +35,7 @@ Stage all modified files and commit using **Conventional Commits** format:
 
 <body — what changed and why>
 
-Co-authored-by: Didier Roche-Tolomelli <didier.roche@canonical.com>
+Co-authored-by: <Live Share participant name> <<email from git log>>
 Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
 ```
 
